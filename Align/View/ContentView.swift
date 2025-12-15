@@ -4,7 +4,10 @@ import SwiftData
 struct ContentView: View {
     @StateObject private var viewModel = HomeViewModel()
     @Environment(\.modelContext) var context
+    
     @Namespace private var animationNamespace
+    
+    @State private var showCalendarPicker = false
     
     var body: some View {
         NavigationView {
@@ -14,17 +17,25 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     
                     VStack(spacing: 15) {
+                        
                         HStack {
-                            Text(viewModel.selectedDate.formatted(.dateTime.month(.wide).year()))
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            Spacer()
-                            Button("Today") {
-                                withAnimation { viewModel.jumpToToday() }
+                            Button(action: {
+                                showCalendarPicker = true
+                            }) {
+                                HStack(spacing: 8) {
+                                    Text(viewModel.selectedDate.formatted(.dateTime.day().month(.wide).year()))
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.primary)
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.body)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.blue.opacity(0.8))
+                                }
                             }
-                            .font(.caption)
-                            .padding(6)
-                            .background(Capsule().stroke(Color.gray.opacity(0.5)))
+                            
+                            Spacer()
                         }
                         .padding(.horizontal)
                         
@@ -94,11 +105,17 @@ struct ContentView: View {
                 .padding()
             }
             .navigationBarHidden(true)
+            
             .sheet(isPresented: $viewModel.showAddSheet) {
                 TaskFormView(taskToEdit: nil, defaultDate: viewModel.selectedDate)
             }
+            
             .sheet(item: $viewModel.taskToEdit) { task in
                 TaskFormView(taskToEdit: task)
+            }
+            
+            .sheet(isPresented: $showCalendarPicker) {
+                CalendarSheetView(selectedDate: $viewModel.selectedDate)
             }
         }
     }
@@ -109,14 +126,23 @@ struct ContentView: View {
     let container = try! ModelContainer(for: AlignTask.self, configurations: config)
     
     let coffeeTask = AlignTask(
-        title: "Coffee",
-        startTime: Date(),
-        endTime: Date().addingTimeInterval(1800),
+        title: "Coffee Break",
+        startTime: Date().addingTimeInterval(1800),
+        endTime: Date().addingTimeInterval(3600),
         icon: "cup.and.saucer.fill",
         colorName: "Purple"
     )
     
+    let meetingTask = AlignTask(
+        title: "Team Meeting",
+        startTime: Date().addingTimeInterval(4800),
+        endTime: Date().addingTimeInterval(7200),
+        icon: "person.3.fill",
+        colorName: "Blue"
+    )
+    
     container.mainContext.insert(coffeeTask)
+    container.mainContext.insert(meetingTask)
     
     return ContentView()
         .modelContainer(container)

@@ -13,8 +13,26 @@ struct TaskFormView: View {
     @State private var selectedColorName: String = "Purple"
     @State private var selectedIcon: String = "star.fill"
     
-    let icons = ["star.fill", "laptopcomputer", "book.fill", "cup.and.saucer.fill", "figure.run", "bed.double.fill", "cart.fill", "gamecontroller.fill"]
     let colorNames = ["Purple", "Pink", "Teal", "Orange", "Blue", "Gray"]
+    
+    let icons = [
+        // General
+        "star.fill", "sparkles", "bookmark.fill", "flag.fill", "checkmark.circle.fill",
+        // Work & Study
+        "briefcase.fill", "laptopcomputer", "doc.text.fill", "book.fill", "graduationcap.fill", "pencil.and.ruler.fill",
+        // Home & Lifestyle
+        "house.fill", "building.2.fill", "cart.fill", "basket.fill", "gift.fill", "creditcard.fill",
+        // Food & Drink
+        "cup.and.saucer.fill", "fork.knife", "wineglass.fill", "birthday.cake.fill",
+        // Health & Wellness
+        "figure.run", "dumbbell.fill", "heart.fill", "brain.head.profile", "bed.double.fill", "pills.fill",
+        // Leisure & Tech
+        "gamecontroller.fill", "tv.fill", "headphones", "music.note", "camera.fill", "paintbrush.fill",
+        // Travel & Nature
+        "car.fill", "airplane", "bus.fill", "tram.fill", "leaf.fill", "pawprint.fill", "sun.max.fill", "moon.fill"
+    ]
+    
+    let iconLayout = [GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
         NavigationView {
@@ -28,36 +46,57 @@ struct TaskFormView: View {
                 }
                 
                 Section(header: Text("Theme")) {
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
+                        HStack(spacing: 15) {
                             ForEach(colorNames, id: \.self) { name in
                                 Circle()
-                                    .fill(name.toColor)
-                                    .frame(width: 35, height: 35)
+                                    .fill(name.toColor.gradient)
+                                    .frame(width: 40, height: 40)
                                     .overlay(
                                         Image(systemName: "checkmark")
+                                            .font(.headline)
                                             .foregroundColor(.white)
                                             .opacity(selectedColorName == name ? 1 : 0)
                                     )
-                                    .onTapGesture { selectedColorName = name }
+                                    .onTapGesture {
+                                        withAnimation(.spring()) {
+                                            selectedColorName = name
+                                        }
+                                    }
                             }
                         }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 5)
                     }
-                    .padding(.vertical, 8)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
+                        LazyHGrid(rows: iconLayout, spacing: 15) {
                             ForEach(icons, id: \.self) { icon in
-                                Image(systemName: icon)
-                                    .font(.title3)
-                                    .padding(10)
-                                    .background(selectedIcon == icon ? Color.accentColor.opacity(0.2) : Color.gray.opacity(0.1))
-                                    .clipShape(Circle())
-                                    .onTapGesture { selectedIcon = icon }
+                                ZStack {
+                                    if selectedIcon == icon {
+                                        Circle()
+                                            .fill(selectedColorName.toColor.opacity(0.2))
+                                            .frame(width: 44, height: 44)
+                                    }
+                                    
+                                    Image(systemName: icon)
+                                        .font(.title3)
+                                        .foregroundColor(selectedIcon == icon ? selectedColorName.toColor : .gray)
+                                        .frame(width: 44, height: 44) // Tap target size
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            withAnimation(.spring()) {
+                                                selectedIcon = icon
+                                            }
+                                        }
+                                }
                             }
                         }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 5)
                     }
-                    .padding(.vertical, 8)
+                    .frame(height: 110)
                 }
             }
             .navigationTitle(taskToEdit == nil ? "New Task" : "Edit Task")

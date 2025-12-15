@@ -25,7 +25,7 @@ struct DailyTaskList: View {
             ScrollView {
                 if tasks.isEmpty {
                     ContentUnavailableView {
-                        Label("Free Day", systemImage: "sparkles")
+                        Label("Free Day", systemImage: "calendar")
                     } description: {
                         Text("No tasks scheduled for this day.")
                     }
