@@ -54,11 +54,6 @@ struct GridTaskCard: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(UIColor.secondarySystemGroupedBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
-        )
     }
 }
 
