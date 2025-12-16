@@ -51,12 +51,11 @@ struct CustomCalendarBottomPanel: View {
                 .padding(.trailing, 16)
             }
             
-            Spacer().frame(height: 20)
+            Spacer().frame(height: 60)
         }
         .background(Color.white)
         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 28, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 28))
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
-        .edgesIgnoringSafeArea(.bottom)
         
         .offset(y: offsetY)
         .gesture(

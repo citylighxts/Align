@@ -42,7 +42,7 @@ struct CalendarViewWrapper: UIViewRepresentable {
                 return components
             }
             
-            uiView.reloadDecorations(forDateComponents: datesToReload, animated: true)
+            uiView.reloadDecorations(forDateComponents: datesToReload, animated: false)
         }
     }
     

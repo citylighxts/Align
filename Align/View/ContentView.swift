@@ -58,6 +58,7 @@ struct ContentView: View {
                             }
                             .transition(.move(edge: .bottom))
                         }
+                        .ignoresSafeArea()
                         .presentationBackground(.clear)
                     }
             }
