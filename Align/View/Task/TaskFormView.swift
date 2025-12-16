@@ -31,9 +31,8 @@ struct TaskFormView: View {
         // Travel & Nature
         "car.fill", "airplane", "bus.fill", "tram.fill", "leaf.fill", "pawprint.fill", "sun.max.fill", "moon.fill"
     ]
-    
     let iconLayout = [GridItem(.flexible()), GridItem(.flexible())]
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -42,11 +41,11 @@ struct TaskFormView: View {
                         .font(.headline)
                     
                     DatePicker("Starts", selection: $startTime, displayedComponents: .hourAndMinute)
+                    // Validasi: End time tidak boleh sebelum Start time
                     DatePicker("Ends", selection: $endTime, in: startTime..., displayedComponents: .hourAndMinute)
                 }
                 
                 Section(header: Text("Theme")) {
-                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 15) {
                             ForEach(colorNames, id: \.self) { name in
@@ -60,9 +59,7 @@ struct TaskFormView: View {
                                             .opacity(selectedColorName == name ? 1 : 0)
                                     )
                                     .onTapGesture {
-                                        withAnimation(.spring()) {
-                                            selectedColorName = name
-                                        }
+                                        withAnimation(.spring()) { selectedColorName = name }
                                     }
                             }
                         }
@@ -79,16 +76,13 @@ struct TaskFormView: View {
                                             .fill(selectedColorName.toColor.opacity(0.2))
                                             .frame(width: 44, height: 44)
                                     }
-                                    
                                     Image(systemName: icon)
                                         .font(.title3)
                                         .foregroundColor(selectedIcon == icon ? selectedColorName.toColor : .gray)
-                                        .frame(width: 44, height: 44) // Tap target size
+                                        .frame(width: 44, height: 44)
                                         .contentShape(Rectangle())
                                         .onTapGesture {
-                                            withAnimation(.spring()) {
-                                                selectedIcon = icon
-                                            }
+                                            withAnimation(.spring()) { selectedIcon = icon }
                                         }
                                 }
                             }
@@ -114,17 +108,15 @@ struct TaskFormView: View {
             }
             .onAppear {
                 if let task = taskToEdit {
+                    // MODE EDIT
                     title = task.title
                     startTime = task.startTime
                     endTime = task.endTime
                     selectedColorName = task.colorName
                     selectedIcon = task.icon
                 } else {
-                    let calendar = Calendar.current
-                    if let newStart = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: defaultDate) {
-                        startTime = newStart
-                        endTime = newStart.addingTimeInterval(3600)
-                    }
+                    startTime = defaultDate
+                    endTime = defaultDate.addingTimeInterval(3600) // Default 1 jam
                 }
             }
         }
@@ -137,15 +129,12 @@ struct TaskFormView: View {
             task.endTime = endTime
             task.icon = selectedIcon
             task.colorName = selectedColorName
-            
             NotificationManager.shared.scheduleNotification(for: task)
-            
         } else {
             let newTask = AlignTask(title: title, startTime: startTime, endTime: endTime, icon: selectedIcon, colorName: selectedColorName)
             context.insert(newTask)
             NotificationManager.shared.scheduleNotification(for: newTask)
         }
-        
         dismiss()
     }
 }

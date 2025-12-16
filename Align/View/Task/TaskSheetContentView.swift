@@ -14,9 +14,18 @@ struct TaskSheetContentView: View {
                 
                 TabView(selection: $viewModel.selectedDate) {
                     ForEach(viewModel.calendarPages, id: \.self) { date in
-                        DailyTaskList(date: date) { task in
-                            viewModel.taskToEdit = task
-                        }
+                        DailyTaskList(
+                            date: date,
+                            onEdit: { task in
+                                viewModel.taskToEdit = task
+                                viewModel.initialStartTime = nil
+                            },
+                            onAddGap: { gapStartTime in
+                                viewModel.initialStartTime = gapStartTime
+                                
+                                viewModel.showAddSheet = true
+                            }
+                        )
                         .tag(date)
                     }
                 }
@@ -24,7 +33,10 @@ struct TaskSheetContentView: View {
                 .animation(.easeInOut, value: viewModel.selectedDate)
             }
             
-            Button(action: { viewModel.showAddSheet = true }) {
+            Button(action: {
+                viewModel.initialStartTime = Date()
+                viewModel.showAddSheet = true
+            }) {
                 Image(systemName: "plus")
                     .font(.title2).fontWeight(.bold).foregroundColor(.white)
                     .frame(width: 60, height: 60)

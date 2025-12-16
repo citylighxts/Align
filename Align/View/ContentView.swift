@@ -38,7 +38,10 @@ struct ContentView: View {
                     .interactiveDismissDisabled()
                 
                     .sheet(isPresented: $viewModel.showAddSheet) {
-                        TaskFormView(taskToEdit: nil, defaultDate: viewModel.selectedDate)
+                        TaskFormView(
+                            taskToEdit: nil,
+                            defaultDate: viewModel.initialStartTime ?? viewModel.selectedDate
+                        )
                     }
                     .sheet(item: $viewModel.taskToEdit) { task in
                         TaskFormView(taskToEdit: task)
@@ -69,7 +72,48 @@ struct ContentView: View {
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: AlignTask.self, configurations: config)
-    let task = AlignTask(title: "Meeting", startTime: Date(), endTime: Date(), icon: "star.fill", colorName: "Purple")
-    container.mainContext.insert(task)
-    return ContentView().modelContainer(container)
+
+    let calendar = Calendar.current
+    let now = calendar.date(
+        bySettingHour: 9,
+        minute: 0,
+        second: 0,
+        of: calendar.date(byAdding: .day, value: 1, to: Date())!
+    )!
+
+    // Task 1: Besok jam 09.00
+    let task1 = AlignTask(
+        title: "Morning Briefing",
+        startTime: now,
+        endTime: now.addingTimeInterval(3600),
+        icon: "sun.max.fill",
+        colorName: "Orange"
+    )
+
+    // Task 2: Jam 13.00
+    let fourHoursLater = now.addingTimeInterval(4 * 3600)
+    let task2 = AlignTask(
+        title: "Project Sync",
+        startTime: fourHoursLater,
+        endTime: fourHoursLater.addingTimeInterval(3600),
+        icon: "person.2.fill",
+        colorName: "Blue"
+    )
+
+    // Task 3: Gap > 4 jam
+    let fiveHoursAfterTask2 = fourHoursLater.addingTimeInterval(6 * 3600)
+    let task3 = AlignTask(
+        title: "Late Night Code",
+        startTime: fiveHoursAfterTask2,
+        endTime: fiveHoursAfterTask2.addingTimeInterval(3600),
+        icon: "laptopcomputer",
+        colorName: "Purple"
+    )
+
+    container.mainContext.insert(task1)
+    container.mainContext.insert(task2)
+    container.mainContext.insert(task3)
+
+    return ContentView()
+        .modelContainer(container)
 }
