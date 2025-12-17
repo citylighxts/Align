@@ -18,7 +18,7 @@ struct CustomCalendarBottomPanel: View {
                 Spacer()
                 
                 Button("Jump to Today") {
-                    let today = Date()
+                    let today = Date().startOfDay
                     let calendar = Calendar.current
                     
                     if calendar.isDate(currentMonth, equalTo: today, toGranularity: .month) {
@@ -27,7 +27,6 @@ struct CustomCalendarBottomPanel: View {
                         }
                     } else {
                         slideEdge = currentMonth > today ? .leading : .trailing
-                        
                         withAnimation {
                             selectedDate = today
                             currentMonth = today
@@ -86,10 +85,12 @@ struct CustomCalendarBottomPanel: View {
                         
                         Button(action: {
                             withAnimation {
-                                selectedDate = date
+                                let normalizedDate = date.startOfDay
+                                selectedDate = normalizedDate
+
                                 if !isSameMonth {
                                     slideEdge = date < currentMonth ? .leading : .trailing
-                                    currentMonth = date
+                                    currentMonth = normalizedDate
                                 }
                             }
                         }) {
