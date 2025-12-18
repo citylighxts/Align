@@ -21,7 +21,8 @@ struct ContentView: View {
                         viewModel: viewModel,
                         allTasks: allTasks,
                         showCalendarPicker: $showCalendarPicker,
-                        animationNamespace: animationNamespace
+                        animationNamespace: animationNamespace,
+                        isTaskListMinimized: currentDetent == .fraction(0.15)
                     )
                     Spacer()
                 }
